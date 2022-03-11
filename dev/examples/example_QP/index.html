@@ -26,17 +26,53 @@ cone_types =
      Clarabel.NonnegativeConeT]    #&lt;--- for the inequality constraints
 
 cone_dims = [1,                    #&lt;--- number of equality constraints
-             4]                    #&lt;--- number of inequality constraints</code></pre><p>Finally we can populate the solver with problem data and solve</p><pre><code class="language- hljs">Clarabel.setup!(solver, P, q, A, b, cone_types, cone_dims, settings)
-Clarabel.solve!(solver)</code></pre><p>then retrieve our solution</p><pre><code class="language-julia hljs">solver.variables.x</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Float64}:
- 0.0
- 0.0</code></pre><p>and the termination status of the solver</p><pre><code class="language-julia hljs">solver.info.status</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">UNSOLVED::SolverStatus = 0</code></pre><div class="admonition is-success"><header class="admonition-header">Tip</header><div class="admonition-body"><p>There is no constraint on the ordering of the cones that appears in <code>cone_types</code> as long as it is compatible with the ordering of the constraints as they appear in <code>A</code> and <code>b</code>.   There is also no constraint on the number of instances of each type that appear. You could, for example, define the inequalities in the above example using</p><pre><code class="language-julia hljs">cone_types =
+             4]                    #&lt;--- number of inequality constraints</code></pre><p>Finally we can populate the solver with problem data and solve</p><pre><code class="language-julia hljs">Clarabel.setup!(solver, P, q, A, b, cone_types, cone_dims, settings)
+Clarabel.solve!(solver)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------------------------------------------------------------
+             Clarabel v0.1.0  -  Clever Acronym
+                   (c) Paul Goulart
+                University of Oxford, 2022
+-------------------------------------------------------------
+problem:
+  variables     = 2
+  constraints   = 5
+  nnz(P)        = 2
+  nnz(A)        = 6
+  cones         = 2
+  : zero        = 1  dim = 1
+  : nonnegative = 1  dim = 4
+  : secondorder = 0
+settings:
+  linear algebra: direct / qdldl, precision: Float64
+  max iter = 50, time limit = Inf,  max step = 0.990
+  tol_feas = 1.0e-05, tol_abs = 1.0e-08, tol_rel = 1.0e-08,
+  static reg : on, ϵ = 1.0e-08
+  dynamic reg: on, ϵ = 1.0e-13, δ = 2.0e-07
+  iter refine: on, reltol = 1.0e-10, abstol = 1.0e-10,
+               max iter = 10, stop ratio = 2.0
+  equilibrate: on, min_scale = 1.0e-04, max_scale = 1.0e+04
+               max iter = 10
+
+iter    pcost        dcost       pres      dres      k/t       gap       step
+-----------------------------------------------------------------------------------
+  0   0.0000e+00  -1.9188e+01  2.00e-08  1.35e+00  1.00e+00  0.00e+00   ------
+  1  -5.1574e-01  -2.1375e+00  1.69e-08  8.82e-02  7.86e-02  1.81e+00  9.38e-01
+  2  -6.4128e-01  -7.7973e-01  2.07e-09  1.05e-03  5.43e-03  1.53e-01  9.90e-01
+  3  -6.4286e-01  -6.4455e-01  2.34e-10  1.05e-05  6.05e-05  1.28e-02  9.90e-01
+  4  -6.4286e-01  -6.4287e-01  5.16e-12  1.05e-07  6.05e-07  1.55e-04  9.90e-01
+  5  -6.4286e-01  -6.4286e-01  8.01e-14  1.05e-09  6.05e-09  1.54e-06  9.90e-01
+  6  -6.4286e-01  -6.4286e-01  1.03e-15  1.05e-11  6.05e-11  1.54e-08  9.90e-01
+-----------------------------------------------------------------------------------
+Terminated with status = solved
+solve time =  3.07s</code></pre><p>then retrieve our solution</p><pre><code class="language-julia hljs">solver.variables.x</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Float64}:
+ 0.4285714282922784
+ 0.2142857141461392</code></pre><p>and the termination status of the solver</p><pre><code class="language-julia hljs">solver.info.status</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SOLVED::SolverStatus = 1</code></pre><div class="admonition is-success"><header class="admonition-header">Tip</header><div class="admonition-body"><p>There is no constraint on the ordering of the cones that appears in <code>cone_types</code> as long as it is compatible with the ordering of the constraints as they appear in <code>A</code> and <code>b</code>.   There is also no constraint on the number of instances of each type that appear. You could, for example, define the inequalities in the above example using</p><pre><code class="language-julia hljs">cone_types =
     [Clarabel.ZeroConeT,           #&lt;--- for the equality constraint
      Clarabel.NonnegativeConeT]    #&lt;--- first half of the inequality constraints
      Clarabel.NonnegativeConeT]    #&lt;--- second half of the inequality constraints
 
 cone_dims = [1,                    #&lt;--- number of equality constraints
              2,                    #&lt;--- first two inequalities constraints
-             2]                    #&lt;--- final two inequalities constraints</code></pre><p>and get the same result.</p></div></div><h2 id="Using-JuMP"><a class="docs-heading-anchor" href="#Using-JuMP">Using JuMP</a><a id="Using-JuMP-1"></a><a class="docs-heading-anchor-permalink" href="#Using-JuMP" title="Permalink"></a></h2><p>We can solve the same problem a little more easily by using Clarabel.jl as the backend solver within <a href="http://www.juliaopt.org/JuMP.jl/stable/">JuMP</a>. Here is the same problem again:</p><pre><code class="language- hljs">using Clarabel, JuMP
+             2]                    #&lt;--- final two inequalities constraints</code></pre><p>and get the same result.</p></div></div><h2 id="Using-JuMP"><a class="docs-heading-anchor" href="#Using-JuMP">Using JuMP</a><a id="Using-JuMP-1"></a><a class="docs-heading-anchor-permalink" href="#Using-JuMP" title="Permalink"></a></h2><p>We can solve the same problem a little more easily by using Clarabel.jl as the backend solver within <a href="http://www.juliaopt.org/JuMP.jl/stable/">JuMP</a>. Here is the same problem again:</p><pre><code class="language-julia hljs">using Clarabel, JuMP
 
 model = JuMP.Model(Clarabel.Optimizer)
 set_optimizer_attribute(model, &quot;verbose&quot;, true)
@@ -46,10 +82,89 @@ set_optimizer_attribute(model, &quot;verbose&quot;, true)
 @constraint(model,  -1 .&lt;= x .&lt;= 1)
 @objective(model, Min, 3x[1]^2 + 2x[2]^2 - x[1] - 4x[2])
 
-optimize!(model)</code></pre><p>Here is the solution</p><pre><code class="language- hljs">JuMP.value.(x)</code></pre><p>and the solver termination status again</p><pre><code class="language-julia hljs">JuMP.termination_status(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OPTIMIZE_NOT_CALLED::TerminationStatusCode = 0</code></pre><h2 id="Using-Convex.jl"><a class="docs-heading-anchor" href="#Using-Convex.jl">Using Convex.jl</a><a id="Using-Convex.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Using-Convex.jl" title="Permalink"></a></h2><p>We can likewise solve the same problem a using Clarabel.jl as the backend solver within <a href="https://jump.dev/Convex.jl/stable/">Convex.jl</a>.   Here is the same problem one more time:</p><pre><code class="language- hljs">using Clarabel, Convex
+optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------------------------------------------------------------
+             Clarabel v0.1.0  -  Clever Acronym
+                   (c) Paul Goulart
+                University of Oxford, 2022
+-------------------------------------------------------------
+problem:
+  variables     = 2
+  constraints   = 5
+  nnz(P)        = 2
+  nnz(A)        = 6
+  cones         = 2
+  : zero        = 1  dim = 1
+  : nonnegative = 1  dim = 4
+  : secondorder = 0
+settings:
+  linear algebra: direct / qdldl, precision: Float64
+  max iter = 50, time limit = Inf,  max step = 0.990
+  tol_feas = 1.0e-05, tol_abs = 1.0e-08, tol_rel = 1.0e-08,
+  static reg : on, ϵ = 1.0e-08
+  dynamic reg: on, ϵ = 1.0e-13, δ = 2.0e-07
+  iter refine: on, reltol = 1.0e-10, abstol = 1.0e-10,
+               max iter = 10, stop ratio = 2.0
+  equilibrate: on, min_scale = 1.0e-04, max_scale = 1.0e+04
+               max iter = 10
+
+iter    pcost        dcost       pres      dres      k/t       gap       step
+-----------------------------------------------------------------------------------
+  0   0.0000e+00  -1.9188e+01  2.00e-08  1.35e+00  1.00e+00  0.00e+00   ------
+  1  -5.1574e-01  -2.1375e+00  1.69e-08  8.82e-02  7.86e-02  1.81e+00  9.38e-01
+  2  -6.4128e-01  -7.7973e-01  2.07e-09  1.05e-03  5.43e-03  1.53e-01  9.90e-01
+  3  -6.4286e-01  -6.4455e-01  2.34e-10  1.05e-05  6.05e-05  1.28e-02  9.90e-01
+  4  -6.4286e-01  -6.4287e-01  5.16e-12  1.05e-07  6.05e-07  1.55e-04  9.90e-01
+  5  -6.4286e-01  -6.4286e-01  8.00e-14  1.05e-09  6.05e-09  1.54e-06  9.90e-01
+  6  -6.4286e-01  -6.4286e-01  1.09e-15  1.05e-11  6.05e-11  1.54e-08  9.90e-01
+-----------------------------------------------------------------------------------
+Terminated with status = solved
+solve time =  816μs</code></pre><p>Here is the solution</p><pre><code class="language-julia hljs">JuMP.value.(x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Float64}:
+ 0.4285714282922784
+ 0.2142857141461392</code></pre><p>and the solver termination status again</p><pre><code class="language-julia hljs">JuMP.termination_status(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OPTIMAL::TerminationStatusCode = 1</code></pre><h2 id="Using-Convex.jl"><a class="docs-heading-anchor" href="#Using-Convex.jl">Using Convex.jl</a><a id="Using-Convex.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Using-Convex.jl" title="Permalink"></a></h2><p>We can likewise solve the same problem a using Clarabel.jl as the backend solver within <a href="https://jump.dev/Convex.jl/stable/">Convex.jl</a>.   Here is the same problem one more time:</p><pre><code class="language-julia hljs">using Clarabel, Convex
 
 x = Variable(2)
 problem = minimize(3square(x[1]) + 2square(x[2]) - x[1] - 4x[2])
 problem.constraints = [x[1] == 2x[2]]
 problem.constraints += [x &gt;= -1; x &lt;= 1]
-solve!(problem, Clarabel.Optimizer; silent_solver = false)</code></pre><p>Here is our solution</p><pre><code class="language- hljs">evaluate(x)</code></pre><p>and the solver termination status again</p><pre><code class="language-julia hljs">problem.status</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OPTIMIZE_NOT_CALLED::TerminationStatusCode = 0</code></pre><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>Note that in the Clarabel.jl output that follows the call to solve! using Convex.jl, the problem posed to the solver has been converted to a second-order cone program with a linear objective.   You can see this because now <code>nnz(P) == 0</code> (there is no quadratic term in the objective) and the solver reports two second order cone constraints.</p><p>Although the solution will be the same, the required number of iterations and solve time are slightly higher.  When solving problems with quadratic objectives in Clarabel.jl, it is generally preferable to use either the  native Clarabel.jl interface or JuMP, both of which handle quadratic terms in the objective directly.</p></div></div><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../linear_solvers/">« Linear Solvers</a><a class="docs-footer-nextpage" href="../example_SOCP/">Basic SOCP Example »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.14 on <span class="colophon-date" title="Thursday 10 March 2022 22:32">Thursday 10 March 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+solve!(problem, Clarabel.Optimizer; silent_solver = false)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------------------------------------------------------------
+             Clarabel v0.1.0  -  Clever Acronym
+                   (c) Paul Goulart
+                University of Oxford, 2022
+-------------------------------------------------------------
+problem:
+  variables     = 5
+  constraints   = 14
+  nnz(P)        = 0
+  nnz(A)        = 17
+  cones         = 4
+  : zero        = 1  dim = 2
+  : nonnegative = 1  dim = 6
+  : secondorder = 2  dim = (3,3)
+settings:
+  linear algebra: direct / qdldl, precision: Float64
+  max iter = 50, time limit = Inf,  max step = 0.990
+  tol_feas = 1.0e-05, tol_abs = 1.0e-08, tol_rel = 1.0e-08,
+  static reg : on, ϵ = 1.0e-08
+  dynamic reg: on, ϵ = 1.0e-13, δ = 2.0e-07
+  iter refine: on, reltol = 1.0e-10, abstol = 1.0e-10,
+               max iter = 10, stop ratio = 2.0
+  equilibrate: on, min_scale = 1.0e-04, max_scale = 1.0e+04
+               max iter = 10
+
+iter    pcost        dcost       pres      dres      k/t       gap       step
+-----------------------------------------------------------------------------------
+  0  -2.2212e-19  -2.0071e+01  1.20e+00  6.24e+00  1.00e+00  0.00e+00   ------
+  1  -5.0156e-01  -2.1965e+00  1.01e-01  5.28e-01  8.88e-02  2.81e+00  9.17e-01
+  2  -6.6332e-01  -1.2692e+00  3.70e-02  1.93e-01  4.56e-02  2.22e-01  7.33e-01
+  3  -6.4241e-01  -6.5602e-01  8.60e-04  4.48e-03  1.52e-03  8.16e-02  9.90e-01
+  4  -6.4283e-01  -6.4327e-01  2.79e-05  1.45e-04  4.93e-05  1.89e-03  9.68e-01
+  5  -6.4285e-01  -6.4290e-01  3.01e-06  1.56e-05  5.31e-06  6.14e-05  8.94e-01
+  6  -6.4286e-01  -6.4287e-01  7.22e-07  3.64e-06  1.25e-06  6.59e-06  7.78e-01
+  7  -6.4286e-01  -6.4286e-01  4.01e-08  1.62e-07  5.67e-08  1.54e-06  9.58e-01
+  8  -6.4286e-01  -6.4286e-01  1.40e-08  7.07e-09  2.48e-09  6.86e-08  9.57e-01
+  9  -6.4286e-01  -6.4286e-01  6.23e-08  3.14e-10  1.10e-10  2.99e-09  9.56e-01
+-----------------------------------------------------------------------------------
+Terminated with status = solved
+solve time =  1.12s</code></pre><p>Here is our solution</p><pre><code class="language-julia hljs">evaluate(x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Float64}:
+ 0.4285681949079707
+ 0.21428409745393076</code></pre><p>and the solver termination status again</p><pre><code class="language-julia hljs">problem.status</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OPTIMAL::TerminationStatusCode = 1</code></pre><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>Note that in the Clarabel.jl output that follows the call to solve! using Convex.jl, the problem posed to the solver has been converted to a second-order cone program with a linear objective.   You can see this because now <code>nnz(P) == 0</code> (there is no quadratic term in the objective) and the solver reports two second order cone constraints.</p><p>Although the solution will be the same, the required number of iterations and solve time are slightly higher.  When solving problems with quadratic objectives in Clarabel.jl, it is generally preferable to use either the  native Clarabel.jl interface or JuMP, both of which handle quadratic terms in the objective directly.</p></div></div><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../linear_solvers/">« Linear Solvers</a><a class="docs-footer-nextpage" href="../example_SOCP/">Basic SOCP Example »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.14 on <span class="colophon-date" title="Friday 11 March 2022 05:56">Friday 11 March 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
