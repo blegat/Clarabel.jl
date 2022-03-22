@@ -30,40 +30,11 @@ cone_types =
 
 cone_dims = [1,                    #&lt;--- number of equality constraints
              4]                    #&lt;--- number of inequality constraints</code></pre><p>You can optionally set the global precision of Julia&#39;s BigFloat type before solving</p><pre><code class="language-julia hljs">setprecision(BigFloat,128)</code></pre><p>Finally we can set up the problem in the usual way and solve</p><pre><code class="language-julia hljs">Clarabel.setup!(solver, P, q, A, b, cone_types, cone_dims, settings)
-Clarabel.solve!(solver)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------------------------------------------------------------
-             Clarabel v0.1.0  -  Clever Acronym
-                   (c) Paul Goulart
-                University of Oxford, 2022
--------------------------------------------------------------
-problem:
-  variables     = 2
-  constraints   = 5
-  nnz(P)        = 2
-  nnz(A)        = 6
-  cones (total) = 2
-    : Zero        = 1,  numel = 1
-    : Nonnegative = 1,  numel = 4
-settings:
-  linear algebra: direct / qdldl, precision: BigFloat (128 bit)
-  max iter = 50, time limit = Inf,  max step = 0.990
-  tol_feas = 1.0e-05, tol_abs = 1.0e-08, tol_rel = 1.0e-08,
-  static reg : on, ϵ = 1.0e-08
-  dynamic reg: on, ϵ = 1.0e-13, δ = 2.0e-07
-  iter refine: on, reltol = 1.0e-10, abstol = 1.0e-10,
-               max iter = 10, stop ratio = 2.0
-  equilibrate: on, min_scale = 1.0e-04, max_scale = 1.0e+04
-               max iter = 10
+result = Clarabel.solve!(solver)
 
-iter    pcost        dcost       pres      dres      k/t        μ       step
------------------------------------------------------------------------------------
-  0   0.0000e+00  -1.9188e+01  7.78e-01  1.35e+00  1.00e+00  0.00e+00   ------
-  1  -4.2383e-01  -2.7944e+00  1.03e-01  1.78e-01  2.93e-01  1.19e+00  9.12e-01
-  2  -6.3790e-01  -9.2528e-01  1.47e-03  2.55e-03  3.06e-02  1.15e-01  9.90e-01
-  3  -6.4285e-01  -6.5317e-01  1.51e-05  2.61e-05  1.07e-03  1.08e-02  9.90e-01
-  4  -6.4286e-01  -6.4297e-01  1.51e-07  2.62e-07  1.19e-05  3.67e-04  9.90e-01
-  5  -6.4286e-01  -6.4286e-01  1.51e-09  2.62e-09  1.19e-07  4.07e-06  9.90e-01
-  6  -6.4286e-01  -6.4286e-01  1.51e-11  2.62e-11  1.19e-09  4.07e-08  9.90e-01
------------------------------------------------------------------------------------
-Terminated with status = solved
-solve time =  4.64s</code></pre><p>Notice that the above would fail if the default solver was used, because Clarabel.jl uses Float64 by default</p><pre><code class="language-julia hljs">Clarabel.Solver()</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Clarabel model with Float precision: Float64
-</code></pre><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>For arbitrary precision arithmetic using <code>BigFloat</code> types you must select an internal linear solver within Clarabel.jl that supports it.   We recommend that you use the <a href="https://github.com/osqp/QDLDL.jl">QDLDL.jl</a> package for such problems, and configure it as the linear solver by setting both <code>direct_kkt_solver = true</code> and <code>direct_solve_method = :qdldl</code> in the Settings object.</p></div></div><h2 id="With-Convex.jl-/-JuMP"><a class="docs-heading-anchor" href="#With-Convex.jl-/-JuMP">With Convex.jl / JuMP</a><a id="With-Convex.jl-/-JuMP-1"></a><a class="docs-heading-anchor-permalink" href="#With-Convex.jl-/-JuMP" title="Permalink"></a></h2><p>Clarabel.jl also supports arbitrary precision arithmetic through Convex.jl.   See the example in the <a href="../convex_jl/#Convex.jl-Interface">Convex.jl Interface</a> section.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><code>JuMP</code> does not currently support arbitrary precision. However, if you want to use <code>Clarabel</code> directly with <code>MathOptInterface</code>, you can use: <code>Clarabel.Optimizer{&lt;: AbstractFloat}</code> as your optimizer.  As above, the problem data precision of your MathOptInterface-model must agree with the optimizer&#39;s precision.</p></div></div><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../convex_jl/">« Convex.jl Interface</a><a class="docs-footer-nextpage" href="../../../linear_solvers/">Linear Solvers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.15 on <span class="colophon-date" title="Monday 21 March 2022 20:22">Monday 21 March 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+#then retrieve the solution
+
+result.x</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{BigFloat}:
+ 0.4285714269640876207411140181534172645215
+ 0.2142857134820418911083215296953877449337</code></pre><p>Notice that the above would fail if the default solver was used, because Clarabel.jl uses Float64 by default</p><pre><code class="language-julia hljs">Clarabel.Solver()</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Clarabel model with Float precision: Float64
+</code></pre><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>For arbitrary precision arithmetic using <code>BigFloat</code> types you must select an internal linear solver within Clarabel.jl that supports it.   We recommend that you use the <a href="https://github.com/osqp/QDLDL.jl">QDLDL.jl</a> package for such problems, and configure it as the linear solver by setting both <code>direct_kkt_solver = true</code> and <code>direct_solve_method = :qdldl</code> in the Settings object.</p></div></div><h2 id="With-Convex.jl-/-JuMP"><a class="docs-heading-anchor" href="#With-Convex.jl-/-JuMP">With Convex.jl / JuMP</a><a id="With-Convex.jl-/-JuMP-1"></a><a class="docs-heading-anchor-permalink" href="#With-Convex.jl-/-JuMP" title="Permalink"></a></h2><p>Clarabel.jl also supports arbitrary precision arithmetic through Convex.jl.   See the example in the <a href="../convex_jl/#Convex.jl-Interface">Convex.jl Interface</a> section.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><code>JuMP</code> does not currently support arbitrary precision. However, if you want to use <code>Clarabel</code> directly with <code>MathOptInterface</code>, you can use: <code>Clarabel.Optimizer{&lt;: AbstractFloat}</code> as your optimizer.  As above, the problem data precision of your MathOptInterface-model must agree with the optimizer&#39;s precision.</p></div></div><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../convex_jl/">« Convex.jl Interface</a><a class="docs-footer-nextpage" href="../../../linear_solvers/">Linear Solvers »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.15 on <span class="colophon-date" title="Tuesday 22 March 2022 07:34">Tuesday 22 March 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
